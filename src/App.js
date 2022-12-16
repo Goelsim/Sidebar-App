@@ -1,23 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import SideMenu, { menuItems } from "./components/sideMenu";
+
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { useState } from "react";
+import URLScreen from "./utils/urlScreen";
 
 function App() {
+  const [inactive, setInactive] = useState(false);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+        <SideMenu
+          onCollapse={(inactive) => {
+            console.log(inactive);
+            setInactive(inactive);
+          }}
+        />
+
+        <div className={`container ${inactive ? "inactive" : ""}`}>
+          {menuItems.map((menu, index) => (
+            <>
+              <Route key={menu.name} exact={menu.exact} path={menu.to}></Route>
+              {menu.subMenus && menu.subMenus.length > 0
+                ? menu.subMenus.map(
+                    (subMenu, i) =>
+                      subMenu.name === "URL" && (
+                        <Route key={subMenu.name} path={subMenu.to}>
+                          <URLScreen />
+                        </Route>
+                      )
+                  )
+                : null}
+            </>
+          ))}
+        </div>
+      </Router>
     </div>
   );
 }
